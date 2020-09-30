@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Gateways\Paypal\PaypalController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +20,6 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/payment', [PageController::class, 'index'])->name('payment.page');
-Route::post('paypal', [PaymentController::class, 'payWithPaypal'])->name('paypal.payment');
+Route::post('/paypal', [PaypalController::class, 'createPayment'])->name('paypal.payment');
+Route::get('status', [PaypalController::class, 'executePayment'])->name('paypal.payment.status');
 
-Route::get('status', [PaymentController::class, 'getPaymentStatus'])->name('paypal.payment.status');
