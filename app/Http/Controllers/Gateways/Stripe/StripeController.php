@@ -3,34 +3,28 @@
 namespace App\Http\Controllers\Gateways\Stripe;
 
 use App\Http\Controllers\Controller;
+use App\Http\Gateways\Stripe\StripeService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use Stripe\Charge;
-use Stripe\Stripe;
 
 class StripeController extends Controller
 {
-    public function __construct()
+    private $stripeService;
+
+    public function __construct(StripeService $stripeService)
     {
-        Stripe::setApiKey('test_SecretKey');
+        $this->stripeService = $stripeService;
     }
 
     public function createPayment(Request $request)
     {
-        \Stripe\Stripe::setApiKey(config('stripe.secret'));
         try {
-            \Stripe\Charge::create(array(
-                                       "amount"      => 300 * 100,
-                                       "currency"    => "usd",
-                                       "source"      => $request->input('stripeToken'), // obtained with Stripe.js
-                                       "description" => "Test payment."
-                                   ));
+            $this->stripeService->createPayment($request);
             Session::flash('success-message', 'Payment done successfully !');
-            return Redirect::back();
+            return back();
         } catch (\Exception $e) {
             Session::flash('fail-message', "Error! Please Try again.");
-            return Redirect::back();
+            return back();
         }
     }
 }
