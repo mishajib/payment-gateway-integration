@@ -32,22 +32,22 @@ Route::put('/stripe', [StripeController::class, 'createPayment'])->name('stripe.
 Route::get('image/compress', [ImageCompressController::class, 'index'])->name('image.compress');
 Route::post('image/compress', [ImageCompressController::class, 'store'])->name('image.compress');
 
-// SSLCOMMERZ Start
-Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout'])->name('ajax.page');
-Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout'])->name('hosted.page');
-
-Route::post('/credit-pay', [SslCommerzPaymentController::class, 'index']);
-Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
-
-Route::post('/credit-success', [SslCommerzPaymentController::class, 'success']);
-Route::post('/credit-fail', [SslCommerzPaymentController::class, 'fail']);
-Route::post('/credit-cancel', [SslCommerzPaymentController::class, 'cancel']);
-
-Route::post('/credit-ipn', [SslCommerzPaymentController::class, 'ipn']);
-//SSLCOMMERZ END
-
 Auth::routes(['verify' => true]);
 
-Route::group(['prefix' => 'admin'], function () {
+Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // SSLCOMMERZ Start
+    Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout'])->name('ajax.page');
+    Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout'])->name('hosted.page');
+
+    Route::post('/credit-pay', [SslCommerzPaymentController::class, 'index']);
+    //SSLCOMMERZ END
+});
+
+Route::group(['middleware' => ['sslcommerz', 'verified']], function () {
+    Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
+    Route::post('/credit-success', [SslCommerzPaymentController::class, 'success']);
+    Route::post('/credit-fail', [SslCommerzPaymentController::class, 'fail']);
+    Route::post('/credit-cancel', [SslCommerzPaymentController::class, 'cancel']);
+    Route::post('/credit-ipn', [SslCommerzPaymentController::class, 'ipn']);
 });

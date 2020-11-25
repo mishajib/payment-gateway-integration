@@ -135,7 +135,7 @@ class SslCommerzPaymentController extends Controller
         $post_data['product_profile']  = "physical-goods";
 
         # OPTIONAL PARAMETERS
-        $post_data['value_a'] = "ref001";
+        $post_data['value_a'] = csrf_token();
         $post_data['value_b'] = "ref002";
         $post_data['value_c'] = "ref003";
         $post_data['value_d'] = "ref004";
